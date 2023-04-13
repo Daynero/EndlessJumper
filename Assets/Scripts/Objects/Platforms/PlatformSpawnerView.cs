@@ -1,4 +1,4 @@
-using Enums;
+using System;
 using UnityEngine;
 
 namespace Objects.Platforms
@@ -8,8 +8,16 @@ namespace Objects.Platforms
         [SerializeField] private PlatformView platformPrefab;
         [SerializeField] private Transform topSpawner;
         [SerializeField] private Transform bottomSpawner;
+        [SerializeField] private StartLine startLine;
 
-        public PlatformView SpawnPlatform(Spawn spawn)
-            => Instantiate(platformPrefab, spawn == Spawn.Top ? topSpawner : bottomSpawner);
+        public event Action OnStartBallMoving;
+        public PlatformView PlatformPrefab => platformPrefab;
+        public Transform TopSpawnerTransform => topSpawner;
+        public Transform BottomSpawnerTransform => bottomSpawner;
+
+        private void Start()
+        {
+            startLine.OnStartBallMoving += OnStartBallMoving;
+        }
     }
 }

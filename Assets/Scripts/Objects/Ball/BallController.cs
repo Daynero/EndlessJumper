@@ -1,61 +1,99 @@
+using System;
+using Core.GameTime;
+using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Utils;
+using Zenject;
 
 public class BallController : MonoBehaviour
 {
     [SerializeField] private float jumpForce = 10f;
-    private Rigidbody2D rb;
-    private float gravityModifier = 1f;
-    private bool isGrounded = true;
-    private float lastClickTime;
-    private float doubleClickTime = 0.2f;
 
-    void Start()
+    private Rigidbody2D _rb;
+    private float _gravityModifier = 1f;
+    private bool _isGrounded = true;
+    private float _lastClickTime;
+    private const float DoubleClickTime = 0.2f;
+
+    public event Action OnGameEnded;
+
+    [Inject]
+    public void Construct(GameTime gameTime)
     {
-        rb = GetComponent<Rigidbody2D>();
+        gameTime.Pause.Subscribe(StopOrMovePlatforms);
     }
 
-    void Update()
+    private void StopOrMovePlatforms(bool isStop)
     {
-        if (Input.GetMouseButtonDown(0))
+        if (isStop)
         {
-            float timeSinceLastClick = Time.time - lastClickTime;
-            
-            if (timeSinceLastClick <= doubleClickTime)
-            {
-                ChangeGravity();
-            }
-            else 
-            {
-                Jump();
-            }
-
-            lastClickTime = Time.time;
+            _rb.velocity = Vector2.zero;
         }
+
+        _rb.bodyType = isStop ? RigidbodyType2D.Static : RigidbodyType2D.Dynamic;
+    }
+
+    private void Start()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void Update()
+    {
+        if (!Input.GetMouseButtonDown(0)) return;
+
+        GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
+
+        if (selectedObject != null && selectedObject.GetComponent<Button>() != null) return;
+
+        float timeSinceLastClick = Time.time - _lastClickTime;
+
+        if (timeSinceLastClick <= DoubleClickTime)
+        {
+            ChangeGravity();
+        }
+        else
+        {
+            Jump();
+        }
+
+        _lastClickTime = Time.time;
+    }
+
+    public void SetBallDynamic(bool isDynamic)
+    {
+        _rb.bodyType = isDynamic ? RigidbodyType2D.Dynamic : RigidbodyType2D.Static;
     }
 
     private void ChangeGravity()
     {
-        gravityModifier *= -1;
-        rb.gravityScale = gravityModifier * 100;
+        _gravityModifier *= -1;
+        _rb.gravityScale = _gravityModifier * 100;
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag(StringConstants.PlatformTag))
+        switch (collision.collider.tag)
         {
-            isGrounded = true;
+            case StringConstants.PlatformTag:
+                _isGrounded = true;
+                break;
+            case StringConstants.DestroyingLineTag:
+                OnGameEnded?.Invoke();
+                break;
         }
     }
 
-    void Jump()
+    private void Jump()
     {
-        if (isGrounded)
+        if (_isGrounded)
         {
-            rb.velocity = Vector2.zero; 
-            rb.AddForce(new Vector2(0, jumpForce * gravityModifier), ForceMode2D.Impulse); 
+            _rb.velocity = Vector2.zero;
+            _rb.AddForce(new Vector2(0, jumpForce * _gravityModifier), ForceMode2D.Impulse);
         }
 
-        isGrounded = false;
+        _isGrounded = false;
     }
 }

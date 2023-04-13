@@ -1,26 +1,35 @@
 using System;
 using Enums;
+using UniRx;
+using Unity.VisualScripting;
 using UnityEngine;
 using Utils;
 
 namespace Objects.Platforms
 {
-    public class PlatformView : MonoBehaviour
+    public class PlatformView : MonoBehaviour, IDisposable
     {
+        private readonly CompositeDisposable _compositeDisposable = new();
         public Spawn Spawn { private get; set; }
-        public event Action<Spawn> OnOutOfTheSpawner;
+        public event Action<Spawn, PlatformView> OnOutOfTheSpawner;
         public event Action OnDeactivatePlatform;
 
         private void OnCollisionExit2D(Collision2D other)
         {
-            if (other.collider.CompareTag(StringConstants.SpawnTag))
+            switch (other.collider.tag)
             {
-                OnOutOfTheSpawner?.Invoke(Spawn);
+                case StringConstants.SpawnTag:
+                    OnOutOfTheSpawner?.Invoke(Spawn, this);
+                    break;
+                case StringConstants.DestroyingLineTag:
+                    OnDeactivatePlatform?.Invoke();
+                    break;
             }
-            else if (other.collider.CompareTag(StringConstants.DestroingLineTag))
-            {
-                OnDeactivatePlatform?.Invoke();
-            }
+        }
+
+        public void Dispose()
+        {
+            _compositeDisposable?.Dispose();
         }
     }
 }

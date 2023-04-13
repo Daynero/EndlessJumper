@@ -4,6 +4,7 @@ namespace Utils
     {
         public const string PlatformTag = "Platform";
         public const string SpawnTag = "Spawn";
-        public const string DestroingLineTag = "DestroingLine";
+        public const string DestroyingLineTag = "DestroingLine";
+        public const string StartLineTag = "StartLine";
     }
 }

@@ -30,6 +30,7 @@ namespace Core.Installers
         private void BindViews()
         {
             Container.BindInterfacesAndSelfTo<PlatformSpawnerView>().FromComponentInHierarchy().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<BallController>().FromComponentInHierarchy().AsSingle().NonLazy();
         }
         
         private void BindScreens()

@@ -19,9 +19,8 @@ namespace Utils
 
         public static void ActionWithThrottle(this Button button, Action action, int throttleMillis = 200)
         {
-            UniRx.ObservableExtensions
-                .Subscribe(button.OnClickAsObservable().ThrottleFirst(TimeSpan.FromMilliseconds(throttleMillis)),
-                    _ => { action?.Invoke(); }).AddTo(button);
+            button.OnClickAsObservable().ThrottleFirst(TimeSpan.FromMilliseconds(throttleMillis))
+                .Subscribe(_ => { action?.Invoke(); }).AddTo(button);
         }
 
         public static void SetAlpha(this Image image, float alpha)

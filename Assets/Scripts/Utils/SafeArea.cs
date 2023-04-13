@@ -5,7 +5,7 @@ namespace Utils
     public class SafeArea : MonoBehaviour
     {
         private RectTransform _panel;
-        private Rect _lastSafeArea = new Rect(0, 0, 0, 0);
+        private Rect _lastSafeArea = new(0, 0, 0, 0);
 
         private void Awake()
         {
@@ -40,14 +40,16 @@ namespace Utils
             const float origScaleFactor = 1920f / 1080f;
             float factScaleFactor = r.height / r.width;
             cam!.orthographicSize = (12f / origScaleFactor) * ((float) Screen.height / Screen.width);
-            Vector3 camPos = cam.transform.position;
+            var camTransform = cam.transform;
+            Vector3 camPos = camTransform.position;
             camPos.y = -2 + (origScaleFactor / factScaleFactor - 1) * 9.3f;
-            cam.transform.position = camPos;
+            camTransform.position = camPos;
 
+            var panelRect = _panel.rect;
             Debug.LogFormat("New safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
                 name, r.x, r.y, r.width, r.height, Screen.width, Screen.height);
             Debug.LogFormat("My safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
-                name, _panel.rect.x, _panel.rect.y, _panel.rect.width, _panel.rect.height, Screen.width, Screen.height);
+                name, panelRect.x, panelRect.y, panelRect.width, panelRect.height, Screen.width, Screen.height);
         }
     }
 }
