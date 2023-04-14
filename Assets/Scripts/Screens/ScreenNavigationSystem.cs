@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Screens.GamePausedPopup;
+using Screens.GameResultPopup;
 using Zenject;
 
 namespace Screens
@@ -10,12 +11,14 @@ namespace Screens
         private ScreenPresenter _currScreen;
 
         private readonly Dictionary<ScreenName, ScreenPresenter> _screenPresenters;
-        
-        public ScreenNavigationSystem(GamePausedPopupPresenter gamePausedPopupPresenter)
+
+        public ScreenNavigationSystem(GamePausedPopupPresenter gamePausedPopupPresenter,
+            GameResultPopupPresenter gameResultPopupPresenter)
         {
             _screenPresenters = new Dictionary<ScreenName, ScreenPresenter>
             {
                 {ScreenName.Paused, gamePausedPopupPresenter},
+                {ScreenName.Result, gameResultPopupPresenter},
             };
         }
 

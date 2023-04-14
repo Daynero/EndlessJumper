@@ -17,7 +17,7 @@ namespace Core.GameTime
         private float _activeTokenTime;
         private bool _isGameEnded;
 
-        public ReactiveProperty<bool> Pause { get; private set; } = new();
+        public ReactiveProperty<bool> Pause { get; } = new();
         public IReadOnlyReactiveProperty<int> TotalSeconds => _totalSeconds;
 
         public event Action<bool> PauseStatusChanged;
@@ -42,24 +42,24 @@ namespace Core.GameTime
 
         public void AddTimeAction(TimeType timeActionType)
         {
-            Pause.Value = timeActionType switch
+            switch (timeActionType)
             {
-                TimeType.PauseStart => true,
-                TimeType.PauseFinish => false,
-                _ => Pause.Value
-            };
+                case TimeType.PauseStart:
+                case TimeType.GameFinish:
+                    Pause.Value = true;
+                    break;
+                case TimeType.PauseFinish:
+                    Pause.Value = false;
+                    break;
+                case TimeType.GameStart:
+                    _gameStarted = true;
+                    break;
+                default:
+                    Pause.Value = Pause.Value;
+                    break;
+            }
+
             PauseStatusChanged?.Invoke(Pause.Value);
-        }
-
-        public void StartGame()
-        {
-            Pause.Value = false;
-            _gameStarted = true;
-        }
-
-        public void StopGame()
-        {
-            _isGameEnded = true;
         }
 
         public void Dispose()

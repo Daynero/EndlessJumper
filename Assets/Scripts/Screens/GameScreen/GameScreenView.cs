@@ -1,4 +1,5 @@
 using System;
+using Animations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,8 @@ namespace Screens.GameScreen
     {
         [SerializeField] private TextMeshProUGUI scoreText;
         [SerializeField] private Button pauseButton;
-        
+
+        private ScoreAnimation _scoreAnimation;
         private CanvasGroup _screenCanvasGroup;
 
         public event Action OnPauseClick;
@@ -19,6 +21,7 @@ namespace Screens.GameScreen
         {
             _screenCanvasGroup = GetComponent<CanvasGroup>();
             pauseButton.ActionWithThrottle(() => OnPauseClick?.Invoke());
+            _scoreAnimation = scoreText.gameObject.GetComponent<ScoreAnimation>();
         }
 
         public void BlockScreenTouches(bool isBlock)
@@ -29,6 +32,11 @@ namespace Screens.GameScreen
         public void SetScore(int score)
         {
             scoreText.text = $"Score: {score}";
+        }
+
+        public void AnimateScore()
+        {
+            _scoreAnimation.PlayAnimation();
         }
     }
 }

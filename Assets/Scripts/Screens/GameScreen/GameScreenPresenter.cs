@@ -1,5 +1,6 @@
 using System;
-using Core.GameTime;
+using Objects.Ball;
+using Objects.Score;
 using UniRx;
 using Unity.VisualScripting;
 
@@ -8,24 +9,25 @@ namespace Screens.GameScreen
     public class GameScreenPresenter : IInitializable, IDisposable
     {
         private readonly GameScreenView _view;
-        private readonly GameTime _gameTime;
-        private readonly CompositeDisposable _compositeDisposable = new();
         private readonly ScreenNavigationSystem _screenNavigationSystem;
+        private readonly CompositeDisposable _compositeDisposable = new();
+        private readonly BallController _ballController;
 
-        public GameScreenPresenter(GameScreenView view, GameTime gameTime,
-            ScreenNavigationSystem screenNavigationSystem)
+        public GameScreenPresenter(GameScreenView view, ScoreController scoreController,
+            ScreenNavigationSystem screenNavigationSystem, BallController ballController)
         {
             _view = view;
-            _gameTime = gameTime;
             _screenNavigationSystem = screenNavigationSystem;
+            scoreController.TotalScore.Subscribe(_view.SetScore).AddTo(_compositeDisposable);
+            _ballController = ballController;
 
             Initialize();
         }
 
         public void Initialize()
         {
-            _gameTime.TotalSeconds.Subscribe(_view.SetScore).AddTo(_compositeDisposable);
             _view.OnPauseClick += SetGameOnPause;
+            _ballController.OnJumpOrGravity += _view.AnimateScore;
         }
 
         public void BlockBoardTouches(bool isBlock)

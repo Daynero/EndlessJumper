@@ -1,4 +1,6 @@
 ﻿using System;
+using Core.GameTime;
+using Objects.Ball;
 using Objects.Platforms;
 using Objects.Score;
 using Screens;
@@ -35,13 +37,8 @@ namespace Core
             _ballController = ballController;
             _platformController = platformController;
             _ballController.OnGameEnded += EndGame;
-            _platformController.OnGameStarted += StartGame;
         }
 
-        private void StartGame()
-        {
-            _gameTime.StartGame();
-        }
 
         private void Start()
         {
@@ -50,9 +47,9 @@ namespace Core
 
         private void EndGame()
         {
-            _gameTime.StopGame();
+            _gameTime.AddTimeAction(TimeType.GameFinish);
             _gameScreenPresenter.BlockBoardTouches(true);
-            _screenNavigationSystem.Show(ScreenName.Paused);
+            _screenNavigationSystem.Show(ScreenName.Result, _scoreController.TotalScore.Value);
         }
     }
 }

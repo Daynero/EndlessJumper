@@ -1,7 +1,9 @@
+using Objects.Ball;
 using Objects.Platforms;
 using Objects.Score;
 using Screens;
 using Screens.GamePausedPopup;
+using Screens.GameResultPopup;
 using Screens.GameScreen;
 using Utils;
 using Zenject;
@@ -24,7 +26,7 @@ namespace Core.Installers
             Container.BindInterfacesAndSelfTo<PlatformController>().FromNew().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<AnimationsController>().FromNew().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<ScreenNavigationSystem>().FromNew().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<global::Core.GameTime.GameTime>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<GameTime.GameTime>().AsSingle().NonLazy();
         }
         
         private void BindViews()
@@ -37,6 +39,7 @@ namespace Core.Installers
         {
             Container.BindViewAndPresenter<GameScreenView, GameScreenPresenter>();
             Container.BindViewAndPresenter<GamePausedPopupView, GamePausedPopupPresenter>();
+            Container.BindViewAndPresenter<GameResultPopupView, GameResultPopupPresenter>();
         }
     }
 }

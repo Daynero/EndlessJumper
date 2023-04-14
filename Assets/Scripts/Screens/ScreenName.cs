@@ -5,5 +5,6 @@ namespace Screens
         Empty,
         Main,
         Paused,
+        Result
     }
 }
